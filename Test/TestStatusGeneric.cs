@@ -52,6 +52,7 @@ namespace Test
             //VERIFY
             status.IsValid.ShouldBeFalse();
             status.Errors.Single().ToString().ShouldEqual("This is an error.");
+            status.Errors.Single().DebugData.ShouldBeNull();
             status.Message.ShouldEqual("Failed with 1 error");
         }
 
@@ -130,13 +131,13 @@ namespace Test
             {
                 MethodToThrowException();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                status.CopyExceptionToDebugData(e);
+                status.AddError(ex, "This is user-friendly error message");
             }
 
             //VERIFY
-            var lines = status.DebugData.Split(Environment.NewLine);
+            var lines = status.Errors.Single().DebugData.Split(Environment.NewLine);
             lines.Length.ShouldEqual(6);
             lines[0].ShouldEqual("This is a test");
             lines[1].ShouldStartWith("StackTrace:   at Test.TestStatusGeneric.MethodToThrowException()");
@@ -164,7 +165,6 @@ namespace Test
 
             //VERIFY
             status.IsValid.ShouldBeTrue();
-
             status.Result.ShouldEqual(null);
         }
 
@@ -190,11 +190,12 @@ namespace Test
             //ATTEMPT
             var status = new StatusGenericHandler<string>();
             status.SetResult("Hello world");
-            status.AddError("This is an error.");
+            var statusCopy = status.AddError("This is an error.");
 
             //VERIFY
             status.IsValid.ShouldBeFalse();
             status.Result.ShouldEqual(null);
+            statusCopy.ShouldEqual(status);
         }
     }
 }

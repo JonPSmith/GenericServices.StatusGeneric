@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2018 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace StatusGeneric
 {
@@ -35,6 +37,7 @@ namespace StatusGeneric
                     ? prefix
                     : prefix + HeaderSeparator + existingError.Header;
             ErrorResult = existingError.ErrorResult;
+            DebugData = existingError.DebugData;
         }
 
         /// <summary>
@@ -46,6 +49,30 @@ namespace StatusGeneric
         /// This is the error provided
         /// </summary>
         public ValidationResult ErrorResult { get; private set; }
+
+        /// <summary>
+        /// This can be used to contain extra data to help the developer debug the error
+        /// For instance, the content of an exception.
+        /// </summary>
+        public string DebugData { get; private set; }
+
+        /// <summary>
+        /// This copies the exception Message, StackTrace and any entries in the Data dictionary into the DebugData string
+        /// </summary>
+        /// <param name="ex"></param>
+        internal void CopyExceptionToDebugData(Exception ex)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(ex.Message);
+            sb.Append("StackTrace:");
+            sb.AppendLine(ex.StackTrace);
+            foreach (DictionaryEntry entry in ex.Data)
+            {
+                sb.AppendLine($"Data: {entry.Key}\t{entry.Value}");
+            }
+
+            DebugData = sb.ToString();
+        }
 
         /// <summary>
         /// A human-readable error display

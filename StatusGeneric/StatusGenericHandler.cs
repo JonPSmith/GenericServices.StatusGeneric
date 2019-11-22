@@ -1,12 +1,10 @@
-﻿// Copyright (c) 2018 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 
 namespace StatusGeneric
 {
@@ -16,7 +14,7 @@ namespace StatusGeneric
     public class StatusGenericHandler : IStatusGeneric
     {
         private const string DefaultSuccessMessage = "Success";
-        private readonly List<ErrorGeneric> _errors = new List<ErrorGeneric>();
+        protected readonly List<ErrorGeneric> _errors = new List<ErrorGeneric>();
         private string _successMessage = DefaultSuccessMessage;
 
         /// <summary>
@@ -27,6 +25,12 @@ namespace StatusGeneric
         {
             Header = header;
         }
+
+        /// <summary>
+        /// The header provides a prefix to any errors you add. Useful if you want to have a general prefix to all your errors
+        /// e.g. a header if "MyClass" would produce error messages such as "MyClass: This is my error message."
+        /// </summary>
+        public string Header { get; set; }
 
         /// <summary>
         /// This holds the list of ValidationResult errors. If the collection is empty, then there were no errors
@@ -48,66 +52,6 @@ namespace StatusGeneric
                 ? _successMessage
                 : $"Failed with {_errors.Count} error" + (_errors.Count == 1 ? "" : "s");
             set => _successMessage = value;
-        }
-
-        /// <summary>
-        /// This can be used to contain extra data to help the developer debug the error
-        /// You can directly write to the DebugData
-        /// </summary>
-        public string DebugData { get; set; }
-
-        /// <summary>
-        /// The header provides a prefix to any errors you add. Useful if you want to have a general prefix to all your errors
-        /// e.g. a header if "MyClass" would produce error messages such as "MyClass: This is my error message."
-        /// </summary>
-        public string Header { get; set; }
-
-        /// <summary>
-        /// This adds one error to the Errors collection
-        /// </summary>
-        /// <param name="errorMessage">The text of the error message</param>
-        /// <param name="propertyNames">optional. A list of property names that this error applies to</param>
-        public IStatusGeneric AddError(string errorMessage, params string[] propertyNames)
-        {
-            if (errorMessage == null) throw new ArgumentNullException(nameof(errorMessage));
-            _errors.Add(new ErrorGeneric(Header, new ValidationResult(errorMessage, propertyNames)));
-            return this;
-        }
-
-        /// <summary>
-        /// This adds one ValidationResult to the Errors collection
-        /// </summary>
-        /// <param name="validationResult"></param>
-        public void AddValidationResult(ValidationResult validationResult)
-        {
-            _errors.Add(new ErrorGeneric(Header, validationResult));
-        }
-
-        /// <summary>
-        /// This appends a collection of ValidationResults to the Errors collection
-        /// </summary>
-        /// <param name="validationResults"></param>
-        public void AddValidationResults(IEnumerable<ValidationResult> validationResults)
-        {
-            _errors.AddRange(validationResults.Select(x => new ErrorGeneric(Header, x)));
-        }
-
-        /// <summary>
-        /// This copies the exception Message, StackTrace and any entries in the Data dictionary into the DebugData string
-        /// </summary>
-        /// <param name="ex"></param>
-        public void CopyExceptionToDebugData(Exception ex)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine(ex.Message);
-            sb.Append("StackTrace:");
-            sb.AppendLine(ex.StackTrace);
-            foreach (DictionaryEntry entry in ex.Data)
-            {
-                sb.AppendLine($"Data: {entry.Key}\t{entry.Value}");
-            }
-
-            DebugData = sb.ToString();
         }
 
         /// <summary>
@@ -143,6 +87,51 @@ namespace StatusGeneric
             return _errors.Any() 
                 ? string.Join(separator, Errors) 
                 : null;
+        }
+
+        /// <summary>
+        /// This adds one error to the Errors collection
+        /// </summary>
+        /// <param name="errorMessage">The text of the error message</param>
+        /// <param name="propertyNames">optional. A list of property names that this error applies to</param>
+        public virtual IStatusGeneric AddError(string errorMessage, params string[] propertyNames)
+        {
+            if (errorMessage == null) throw new ArgumentNullException(nameof(errorMessage));
+            _errors.Add(new ErrorGeneric(Header, new ValidationResult(errorMessage, propertyNames)));
+            return this;
+        }
+
+        /// <summary>
+        /// This adds one error to the Errors collection and saves the exception's data to the DebugData property
+        /// </summary>
+        /// <param name="ex">The exception that you want to turn into a IStatusGeneric error.</param>
+        /// <param name="errorMessage">The user-friendly text for the error message</param>
+        /// <param name="propertyNames">optional. A list of property names that this error applies to</param>
+        public IStatusGeneric AddError(Exception ex, string errorMessage, params string[] propertyNames)
+        {
+            if (errorMessage == null) throw new ArgumentNullException(nameof(errorMessage));
+            var errorGeneric = new ErrorGeneric(Header, new ValidationResult(errorMessage, propertyNames));
+            errorGeneric.CopyExceptionToDebugData(ex);
+            _errors.Add(errorGeneric);
+            return this;
+        }
+
+        /// <summary>
+        /// This adds one ValidationResult to the Errors collection
+        /// </summary>
+        /// <param name="validationResult"></param>
+        public void AddValidationResult(ValidationResult validationResult)
+        {
+            _errors.Add(new ErrorGeneric(Header, validationResult));
+        }
+
+        /// <summary>
+        /// This appends a collection of ValidationResults to the Errors collection
+        /// </summary>
+        /// <param name="validationResults"></param>
+        public void AddValidationResults(IEnumerable<ValidationResult> validationResults)
+        {
+            _errors.AddRange(validationResults.Select(x => new ErrorGeneric(Header, x)));
         }
     }
 }

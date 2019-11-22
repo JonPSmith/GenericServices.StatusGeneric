@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
@@ -25,12 +25,6 @@ namespace StatusGeneric
         /// If there are errors it contains the message "Failed with NN errors"
         /// </summary>
         string Message { get; }
-
-        /// <summary>
-        /// This can be used to contain extra data to help the developer debug the error
-        /// For instance, the content of an exception.
-        /// </summary>
-        string DebugData { get; }
 
         /// <summary>
         /// This allows statuses to be combined
