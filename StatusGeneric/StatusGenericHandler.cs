@@ -38,9 +38,14 @@ namespace StatusGeneric
         public IReadOnlyList<ErrorGeneric> Errors => _errors.AsReadOnly();
 
         /// <summary>
-        /// This is true if any errors have been reistered 
+        /// This is true if there are no errors 
         /// </summary>
         public bool IsValid => !_errors.Any();
+
+        /// <summary>
+        /// This is true if any errors have been added 
+        /// </summary>
+        public bool HasErrors => _errors.Any();
 
         /// <summary>
         /// On success this returns the message as set by the business logic, or the default messages set by the BizRunner

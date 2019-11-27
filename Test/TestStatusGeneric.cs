@@ -36,6 +36,7 @@ namespace Test
 
             //VERIFY
             status.IsValid.ShouldBeTrue();
+            status.HasErrors.ShouldBeFalse();
             status.Errors.Any().ShouldBeFalse();
             status.Message.ShouldEqual("New message");
         }
@@ -51,6 +52,7 @@ namespace Test
 
             //VERIFY
             status.IsValid.ShouldBeFalse();
+            status.HasErrors.ShouldBeTrue();
             status.Errors.Single().ToString().ShouldEqual("This is an error.");
             status.Errors.Single().DebugData.ShouldBeNull();
             status.Message.ShouldEqual("Failed with 1 error");

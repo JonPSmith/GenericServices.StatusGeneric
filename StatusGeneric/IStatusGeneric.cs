@@ -21,6 +21,11 @@ namespace StatusGeneric
         bool IsValid { get; }
 
         /// <summary>
+        /// This is true if any errors have been added 
+        /// </summary>
+        bool HasErrors { get; }
+
+        /// <summary>
         /// On success this returns any message set by GenericServices, or any method that returns a status
         /// If there are errors it contains the message "Failed with NN errors"
         /// </summary>
