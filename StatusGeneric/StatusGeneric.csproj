@@ -11,10 +11,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.0.1-preview001</PackageVersion>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <PackageId>GenericServices.StatusGeneric</PackageId>
     <Authors>Jon P Smith</Authors>
     <Company>Selective Analytics</Company>
@@ -27,7 +27,8 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>EfCore.GenericServices, EfCore.GenericEventRunner</PackageTags>
     <PackageReleaseNotes>
-      - Updated to provide needed features for GeneriBizRunner
+      - Updated to provide needed features for GenericBizRunner
+      - Added some interfaces and made Message read/write
     </PackageReleaseNotes>
   </PropertyGroup>
 

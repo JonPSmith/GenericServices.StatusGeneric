@@ -11,7 +11,7 @@ namespace StatusGeneric
     /// <summary>
     /// This contains the error handling part of the GenericBizRunner
     /// </summary>
-    public class StatusGenericHandler : IStatusGeneric
+    public class StatusGenericHandler : IStatusGenericHandler
     {
         /// <summary>
         /// This is the default success message.
