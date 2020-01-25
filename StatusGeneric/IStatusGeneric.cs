@@ -29,7 +29,7 @@ namespace StatusGeneric
         /// On success this returns any message set by GenericServices, or any method that returns a status
         /// If there are errors it contains the message "Failed with NN errors"
         /// </summary>
-        string Message { get; }
+        string Message { get; set; }
 
         /// <summary>
         /// This allows statuses to be combined

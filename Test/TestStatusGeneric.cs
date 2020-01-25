@@ -42,6 +42,38 @@ namespace Test
         }
 
         [Fact]
+        public void TestGenericStatusSetMessageViaInterfaceOk()
+        {
+            //SETUP 
+            IStatusGeneric status = new StatusGenericHandler();
+
+            //ATTEMPT
+            status.Message = "New message";
+
+            //VERIFY
+            status.IsValid.ShouldBeTrue();
+            status.HasErrors.ShouldBeFalse();
+            status.Errors.Any().ShouldBeFalse();
+            status.Message.ShouldEqual("New message");
+        }
+
+        [Fact]
+        public void TestGenericStatusWithTypeSetMessageViaInterfaceOk()
+        {
+            //SETUP 
+            IStatusGeneric status = new StatusGenericHandler<string>();
+
+            //ATTEMPT
+            status.Message = "New message";
+
+            //VERIFY
+            status.IsValid.ShouldBeTrue();
+            status.HasErrors.ShouldBeFalse();
+            status.Errors.Any().ShouldBeFalse();
+            status.Message.ShouldEqual("New message");
+        }
+
+        [Fact]
         public void TestGenericStatusWithErrorOk()
         {
             //SETUP 

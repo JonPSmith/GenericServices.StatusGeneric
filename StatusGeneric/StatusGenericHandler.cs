@@ -13,7 +13,10 @@ namespace StatusGeneric
     /// </summary>
     public class StatusGenericHandler : IStatusGeneric
     {
-        private const string DefaultSuccessMessage = "Success";
+        /// <summary>
+        /// This is the default success message.
+        /// </summary>
+        public const string DefaultSuccessMessage = "Success";
         protected readonly List<ErrorGeneric> _errors = new List<ErrorGeneric>();
         private string _successMessage = DefaultSuccessMessage;
 
@@ -96,6 +99,7 @@ namespace StatusGeneric
 
         /// <summary>
         /// This adds one error to the Errors collection
+        /// NOTE: This is virtual so that the StatusGenericHandler.Generic can override it. That allows both to return a IStatusGeneric result
         /// </summary>
         /// <param name="errorMessage">The text of the error message</param>
         /// <param name="propertyNames">optional. A list of property names that this error applies to</param>
