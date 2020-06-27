@@ -29,7 +29,8 @@ public IStatusGeneric NonStatusGenericString(string s)
     status.Message = "All went well";
 
     //If no errors were added then its returns a IsValid status with the message
-    //If there are errors then the Message says something like "Failed with 1 error" and the HasErrors will be true, IsValid will be false
+    //If there are errors then the Message says something like "Failed with 1 error"
+    //and the HasErrors will be true, IsValid will be false
     return status;
 }
 
@@ -100,6 +101,8 @@ public IStatusGeneric<int> StatusGenericNum(int i)
     if (combinedNums <= 0)
         status.AddError("input must be positive", nameof(i));
 
-    //If you return a IStatusGeneric<T> and there are errors then the result will be set to default
+    //If you return a IStatusGeneric<T> and there are errors then
+    //1. the result will be set to default value for that type
+    //2  The Message will be set to "Failed with xx errors"
     return status;
 }
