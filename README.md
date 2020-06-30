@@ -106,3 +106,15 @@ public IStatusGeneric<int> StatusGenericNum(int i)
     //2  The Message will be set to "Failed with xx errors"
     return status;
 }
+```
+  
+
+## When unit testing...
+
+If you are testing a service its always good to check that the service returns the status you expect. If you expect it to pass then you can use this following xUnit fluent test which will
+1. Test that it was a successful result
+2. Show you the errors in the unit test window
+
+```c#
+status.IsValid.ShouldBeTrue(status.GetAllErrors());
+```
