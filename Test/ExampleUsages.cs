@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2020 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System.Linq;
 using StatusGeneric;
-using Xunit.Abstractions;
 
 namespace Test
 {
@@ -64,6 +64,69 @@ namespace Test
             return status;
         }
 
+        public IStatusGeneric CheckPassword(string password)
+        {
+            var status = new StatusGenericHandler();
+
+            //series of tests and then return all the errors together
+            //Good because the user gets all the errors at once
+            if (password.Length < 10)
+                status.AddError("A password must be 10 or more in length",
+                    nameof(password));
+            if (!password.Any(char.IsUpper))
+                status.AddError("A password must contain an upper case character",
+                    nameof(password));
+            if (!password.Any(char.IsLower))
+                status.AddError("A password must contain a lower case character",
+                    nameof(password));
+            if (!password.Any(char.IsDigit))
+                status.AddError("A password must contain an number",
+                    nameof(password));
+            
+            return status;
+        }
+
+        public IStatusGeneric<string> Login
+            (string email, string password)
+        {
+            var status = new StatusGenericHandler<string>();
+
+            status.CombineStatuses(
+                CheckValidEmail(email));
+
+            if (status.HasErrors)
+                return status;
+
+            if (status.CombineStatuses(
+                    CheckPassword(password)).HasErrors)
+                return status;
+
+            var loginStatus = LoginUser(email, password);
+            status.CombineStatuses(loginStatus);
+
+            status.SetResult(loginStatus.Result);
+
+            return status;
+        }
+
+        //DUMMY
+        public IStatusGeneric<string> LoginUser(string email, string password)
+        {
+            var status = new StatusGenericHandler<string>();
+
+            return status;
+        }
+
+        //DUMMY
+        public IStatusGeneric CheckValidEmail(string email)
+        {
+            var status = new StatusGenericHandler();
+            if (email == null)
+                status.AddError("The email must not be null", nameof(email));
+            return status;
+        }
+
+
         public IStatusGeneric<int> StatusGenericNum(int i)
         {
             var status = new StatusGenericHandler<int>();
@@ -108,4 +171,6 @@ namespace Test
             return status;
         }
     }
+
+
 }

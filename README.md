@@ -55,55 +55,59 @@ public IStatusGeneric<string> StatusGenericNumReturnString(int i)
 }
 ```
 
+## Combining multiple checks
 
-## Typical patterns
-
-You can use StatusGeneric in a few ways, but here is an example of the patterns I often find myself using.
+This approach makes sure all the errors are returned, which is best for the user
 
 ```c#
-public IStatusGeneric<int> StatusGenericNum(int i)
-{```
-    var status = new StatusGenericHandler<int>();
+public IStatusGeneric CheckPassword(string password)
+{
+    var status = new StatusGenericHandler();
 
     //series of tests and then return all the errors together
     //Good because the user gets all the errors at once
-    if (i == 20)
-        status.AddError("input must not be 20", nameof(i));
-    if (i == 30)
-        status.AddError("input must not be 30", nameof(i));
-    if (i == 40)
-        status.AddError("input must not be 40", nameof(i));
-    if (i == 50)
-        status.AddError("input must not be 50", nameof(i));
-    if (!status.IsValid)
-        return status;
+    if (password.Length < 10)
+        status.AddError("A password must be 10 or more in length",
+            nameof(password));
+    if (!password.Any(char.IsUpper))
+        status.AddError("A password must contain an upper case character",
+            nameof(password));
+    if (!password.Any(char.IsLower))
+        status.AddError("A password must contain a lower case character",
+            nameof(password));
+    if (!password.Any(char.IsDigit))
+        status.AddError("A password must contain an number",
+            nameof(password));
+    
+    return status;
+}
+```
 
-    //add error and return immediately
-    if (i <= 0)
-        return status.AddError("input must be positive", nameof(i));
+## Combining errors from multiple statuses
 
-    //combine error from another non-StatusGeneric method and return if has errors
-    status.CombineStatuses(NonStatusGenericString(i == 10 ? null : "good"));
+Sometimes the testing for errors is best coded by called to other methods that return the IStatusGeneric interface. The code below shows a fictitious example of logging in with tests on the email, password and the actual login part.
+
+```c#
+public IStatusGeneric<string> Login
+    (string email, string password)
+{
+    var status = new StatusGenericHandler<string>();
+
+    status.CombineStatuses(
+        CheckValidEmail(email));
+
     if (status.HasErrors)
         return status;
 
-    //combine errors from another generic status, keeping the status to extract later
-    var stringStatus = StatusGenericNumReturnString(i);
-    if (status.CombineStatuses(stringStatus).HasErrors)
+    if (status.CombineStatuses(
+            CheckPassword(password)).HasErrors)
         return status;
 
-    //Do something with the Result from the StatusGenericNumReturnString method
-    var combinedNums = int.Parse(stringStatus.Result) + i;
-    //Set the result to be returned from this method if there are no errors
-    status.SetResult(combinedNums);
+    var loginStatus = LoginUser(email, password);
+    status.CombineStatuses(loginStatus);
 
-    //You can put tests just before a result would be returned  - any error will set the result to default value
-    if (combinedNums <= 0)
-        status.AddError("input must be positive", nameof(i));
+    status.SetResult(loginStatus.Result);
 
-    //If you return a IStatusGeneric<T> and there are errors then
-    //1. the result will be set to default value for that type
-    //2  The Message will be set to "Failed with xx errors"
     return status;
 }
 ```
