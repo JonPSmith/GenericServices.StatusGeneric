@@ -32,6 +32,7 @@ namespace StatusGeneric
         /// <summary>
         /// The header provides a prefix to any errors you add. Useful if you want to have a general prefix to all your errors
         /// e.g. a header if "MyClass" would produce error messages such as "MyClass: This is my error message."
+        /// NOTE: Headers aren't supported by the https://github.com/JonPSmith/Net.LocalizeMessagesAndErrors library
         /// </summary>
         public string Header { get; set; }
 
@@ -63,10 +64,13 @@ namespace StatusGeneric
         }
 
         /// <summary>
-        /// This allows statuses to be combined. Copies over any errors and replaces the Message if the currect message is null
-        /// If you are using Headers then it will combine the headers in any errors in combines
-        /// e.g. Status1 with header "MyClass" combines Status2 which has header "MyProp" and status2 has errors.
-        /// The result would be error message in status2 would be updates to start with "MyClass>MyProp: This is my error message."
+        /// This allows statuses to be combined. This does the following
+        /// 1. The status parameter's Errors are added to the current status
+        /// 2. It updates the current Message if the status parameter's Message has the DefaultSuccessMessage
+        /// NOTE: If you are using Headers, then it will combine the headers in any errors in combines
+        /// e.g. If current Header is "MyClass" and the status parameter's Header is "MyProp", then
+        /// each error in the status parameter's would start with "MyClass>MyProp:", e.g. "MyClass>MyProp: This is my error message."
+        /// NOTE: Headers aren't supported by the https://github.com/JonPSmith/Net.LocalizeMessagesAndErrors library.
         /// </summary>
         /// <param name="status"></param>
         public IStatusGeneric CombineStatuses(IStatusGeneric status)
